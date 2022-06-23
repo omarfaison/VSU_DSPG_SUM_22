@@ -1,4 +1,4 @@
-setwd("D:/code/pburg_p20")
+# READ IN PACKAGES
 library(tidyverse)
 library(tidycensus)
 library(tigris)
@@ -14,14 +14,17 @@ library(viridis)
 library(RColorBrewer)
 library(stringr)
 
-census_api_key("ea0442429a5972eface00da5f17f47cc37721031", install=T, overwrite=T)
+#SET UP CENSUS CALL
+census_api_key("USE YOUR OWN", install=T, overwrite=T)
 options(tigris_use_cache=T)
 options(tigris_class="sf")
 readRenviron('~/.Renviron')
 
+#ISOLATE COUNTIES AROUND PETERSBURG
 va_counties<-counties("VA", cb=T)
 pburg_region<-filter(va_counties, COUNTYFP %in% c("730","570","041","053","149"))
 
+#PULL ACS DATA AT COUNTY LEVEL FOR RACE, INCOME, EMPLOYMENT, INSURANCE FOR VA
 va_data<-get_acs(geography="county", state="51",
                     variables=(c(all_pop = "B03002_001", 
                                  white_pop = "B03002_003", 
@@ -38,10 +41,12 @@ va_data<-get_acs(geography="county", state="51",
                                notlabor_noins= "B27011_017")),
                     geometry=T, cache=T )
 
+#REMOVE MOE AND MAKE DATA WIDE
 va_data_wide<-va_data %>%
   select(-moe) %>%
   spread(variable, estimate)
 
+#CALCULATE PERCENTAGES FOR RACE, INCOME, EMPLOYMENT, INSURANCE
 va_data_calc<-va_data_wide %>%
   transmute(GEOID= GEOID,
             NAME=NAME,
@@ -55,6 +60,7 @@ va_data_calc<-va_data_wide %>%
             med_income = med_income,
             pct_uninsured = (emp_noins+unemp_noins+notlabor_noins)/ins_universe * 100)
 
+#GRAPH FOR IMPORTANT STATS BY COUNTY ACROSS STATE
 va_data_calc%>%
   top_n(10, pct_black)%>%
 ggplot(aes(x=reorder(NAME,pct_black), y=pct_black, fill=pct_black))+
@@ -83,6 +89,7 @@ va_data_calc%>%
   labs(x="NAME")+
   coord_flip()
 
+#ISOLATE PETERSBURG REGION AND REPEAT GRAPHS AS ABOVE
 pburg_region_calc<-filter(va_data_calc, GEOID %in% c("51730","51570","51041","51053","51149"))
 ggplot(pburg_region_calc, aes(x=reorder(NAME,pct_uninsured), y=pct_uninsured, fill=pct_uninsured))+
   geom_col()+
@@ -100,6 +107,7 @@ ggplot(pburg_region_calc, aes(x=reorder(NAME,pct_poverty), y=pct_poverty, fill=p
   geom_text(aes(label=round(pct_poverty,1)), hjust=0)+
   coord_flip()
 
+#PUT PETERSBURG REGION DATA ON MAP
 tm_shape(pburg_region_calc)+
   tm_fill("pct_poverty", palette="BuPu")+
   tm_borders(col="black")+
@@ -118,6 +126,7 @@ tm_shape(pburg_region_calc)+
   tm_shape(pburg_region)+
   tm_text("NAME")
 
+#ACS DATA PULL FOR PETERSBURG AT THE TRACT LEVEL
 pburg_data<-get_acs(geography="tract", state="51", county="730",
                     variables=(c(all_pop = "B03002_001", 
                                  white_pop = "B03002_003", 
@@ -134,10 +143,12 @@ pburg_data<-get_acs(geography="tract", state="51", county="730",
                                  notlabor_noins= "B27011_017")),
                     geometry=T, cache=T )
 
+#REMOVE MOE AND SPREAD
 pburg_data_wide<-pburg_data %>%
   select(-moe) %>%
   spread(variable, estimate)
 
+#CALCULATE STATS FOR PETERSBURG REGION
 pburg_data_calc<-pburg_data_wide %>%
   transmute(GEOID= GEOID,
             NAME=NAME,
@@ -152,7 +163,7 @@ pburg_data_calc<-pburg_data_wide %>%
             med_income = med_income,
             pct_uninsured = (emp_noins+unemp_noins+notlabor_noins)/ins_universe * 100)
 
-
+#GRAPH STATS FOR PETERSBURG REGION
 tm_shape(pburg_data_calc)+
   tm_fill("pct_uninsured", palette="BuPu")+
   tm_borders(col="black")+
