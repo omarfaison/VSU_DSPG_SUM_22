@@ -5,7 +5,7 @@ library(tidycensus)
 library(SASxport)
 Alcohol <- read.xport("data/P_ALQ.XPT")
 #set up census key
-census_api_key("7f9f27c9e5d1ccfe38c62246c5f964df59beff97", install=T, overwrite=T)
+census_api_key("insert key here", install=T, overwrite=T)
 readRenviron("~/.Renviron")
 
 #ISOLATE COUNTIES AROUND PETERSBURG
