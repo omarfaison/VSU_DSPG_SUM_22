@@ -32,6 +32,13 @@ pburg_poverty_calc<-pburg_poverty_wide %>%
             NAME=NAME,
             poverty_below = poverty_below_100/total * 100)
 
+#Graph poverty in Petersburg
+ggplot(pburg_poverty_calc, aes(x=reorder(NAME,poverty_below), y=poverty_below, fill=poverty_below))+
+  geom_col()+
+  labs(x="NAME")+
+  coord_flip()
+
+
 
 #Mapping poverty in Petersburg tracts
 tm_shape(pburg_poverty_calc)+
