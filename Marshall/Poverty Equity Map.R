@@ -35,9 +35,8 @@ pburg_poverty_calc<-pburg_poverty_wide %>%
 #Graph poverty in Petersburg
 ggplot(pburg_poverty_calc, aes(x=reorder(NAME,poverty_below), y=poverty_below, fill=poverty_below))+
   geom_col()+
-  labs(x="NAME")+
+  labs(x="NAME", y="Percentage of Households", title = "Below Poverty")+
   coord_flip()
-
 
 
 #Mapping poverty in Petersburg tracts
