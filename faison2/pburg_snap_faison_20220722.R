@@ -183,14 +183,9 @@ pburg_tract_centroids<-st_centroid(pburg_demos) %>%
 snap_locations<-read.csv("pburg_snap_retailers.csv") 
 snap_locations_sf<-st_as_sf(snap_locations, coords=c("Longitude","Latitude"), crs="WGS84") 
 
-#extract column names
-columns<-as.data.frame(names(select_if(pburg_demos,is.numeric))) %>%
-  filter(row_number() != n()) 
-columns<-setNames(columns,"var_name")
-
 #isolate numeric data and create correlation matrix
 pburg_numeric<-select_if(pburg_demos, is.numeric) %>% st_drop_geometry()
-cor(pburg_numeric)
+corrplot(cor(pburg_numeric), method = "number")
 
 #view stores by pct_minority
 tm_shape(pburg_demos)+
@@ -207,7 +202,7 @@ snap_with_demos<-left_join(pburg_demos, snap_count) %>%
 
 #rerun correlation with store information
 pburg_store_count_numeric<-select_if(snap_with_demos, is.numeric) %>% st_drop_geometry()
-cor(pburg_store_count_numeric)
+corrplot(cor(pburg_store_count_numeric), method="number")
 
 #plot store counts by pct_minority
 ggplot(snap_with_demos, aes(x=reorder(tract, pct_minority), y=n))+
