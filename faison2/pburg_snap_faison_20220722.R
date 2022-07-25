@@ -16,6 +16,7 @@ library(readxl)
 library(shiny)
 library(DT)
 library(osmdata)
+library(corrplot)
 
 #read petersburg data at tract level
 pburg_data<-get_acs(geography="tract", state="51", county="730",
