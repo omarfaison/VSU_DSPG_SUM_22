@@ -3,6 +3,7 @@ library(tidycensus)
 library(tigris)
 library(sf)
 library(rebus)
+library(corrplot)
 
 va_counties<-counties("VA",cb=T)
 
@@ -112,7 +113,43 @@ saveRDS(va_demos, "va_demos.RDS")
 saveRDS(region_demos, "region_demos.RDS")
 saveRDS(pburg_demos, "pburg_demos.RDS")
 
+va_stats<-readRDS("va_demos.RDS")
 
-ggplot(va_rural)+
+
+ggplot(va_demos)+
   geom_sf(aes(fill=rural_class, color=rural_class))+
-  geom_sf(data=va_counties, fill=NA)
+  geom_sf(data=va_counties, fill=NA)+
+  theme_void()
+
+ggplot()+
+  geom_density(data=va_demos, aes(pct_minority), color="green")+
+  geom_density(data=region_demos, aes(pct_minority), color="blue")+
+  geom_density(data=pburg_demos, aes(pct_minority), color="red")+
+  theme_classic()
+
+
+va_high_minority<-filter(va_demos, pct_minority >=65)
+region_high_minority<-filter(region_demos, pct_minority >=65)
+
+ggplot()+
+  geom_density(data=va_high_minority, aes(pct_minority), color="green")+
+  geom_density(data=region_high_minority, aes(pct_minority), color="blue")+
+  geom_density(data=pburg_demos, aes(pct_minority), color="red")
+
+va_high_minority_forcor<-select(va_high_minority, population:med_income)   %>% st_drop_geometry()
+region_high_minority_forcor<-select(region_high_minority, population:med_income)   %>% st_drop_geometry()
+pburg_demos_forcor<-select(pburg_demos, population:med_income)   %>% st_drop_geometry()
+
+va_hm_corr<-cor(na.omit(va_high_minority_forcor))
+region_hm_corr<-cor(na.omit(region_high_minority_forcor))
+pburg_hm_corr<-cor(na.omit(pburg_demos_forcor))
+
+pdf(file="high_minority_correlations.pdf")
+corrplot(va_hm_corr, method="number")
+corrplot(region_hm_corr, method="number")
+corrplot(pburg_hm_corr, method="number")
+dev.off()
+
+va_forcor<-select(va_demos, population:med_income)   %>% st_drop_geometry()
+va_corr<-cor(na.omit(va_forcor))
+corrplot(va_corr, method="number")

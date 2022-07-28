@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Untitled layer</name>
+    <Style id="icon-1899-0288D1-nodesc-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-nodesc-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1899-0288D1-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>7-Eleven</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.3828996,37.217798,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Petersburg Food Mart</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.3765135,37.2379027,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Petersburg Marketplace</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.3604147,37.1744343,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Midget Mart</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.4267294,37.2209966,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Kwik Mart</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.3643,37.2394155,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>7-Eleven</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.3826533,37.2059937,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Qwik Stop</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.3915936,37.2309263,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Miller Mart</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.3333303,37.2000693,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Valero Food Mart</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.4226159,37.2032917,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Market Place Sunoco</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -77.4053642,37.2272011,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
