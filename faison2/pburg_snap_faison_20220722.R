@@ -239,3 +239,9 @@ tm_shape(pburg_demos)+
   tm_lines(col="green")+
   tm_shape(med_streets$osm_lines)+
   tm_lines(col="blue")
+
+pov_pal<-colorNumeric(palette=c("grey","red"), domain=pburg_demos$pct_minority)
+leaflet(pburg_demos)%>%
+  addTiles()%>%
+  addPolygons(fillColor=~pov_pal(pct_minority), fillOpacity = 0.7, weight=0.1)
+  
