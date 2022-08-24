@@ -117,7 +117,7 @@ pov_pal<-colorNumeric(palette="BuPu", domain=pburg_region_calc$pct_poverty)
 
 leaflet()%>%
   addTiles()%>%
-  addPolygons(data=pburg_region_calc_leaflet, fillOpacity=0.8, color=~pov_pal(pct_poverty))%>%
+  addPolygons(data=pburg_region_calc_leaflet, fillOpacity=1, color=~pov_pal(pct_poverty))%>%
   addPolygons(data=pburg_region_leaflet, fillOpacity=0, weight=0, label=~NAME)
 
 pburg_data<-get_acs(geography="tract", state="51", county="730",
