@@ -100,7 +100,8 @@ server<-function(input, output, session) {
   
   output$scatter<-renderPlot({
     ggplot(pburg_merged, aes(.data[[input$demo1]], .data[[input$demo2]]))+
-      geom_text(aes(label=tract_ID))
+      geom_text(aes(label=tract_ID)) +
+      theme_minimal()
   })
   
   output$demo_table<-DT::renderDT({
