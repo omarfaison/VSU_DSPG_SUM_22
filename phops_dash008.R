@@ -40,7 +40,7 @@ ui<-fluidPage(
 )
 
 server<-function(input, output, session) {
-
+snap_pal<-colorFactor(palette=c("yellow", "green"), domain=pburg_food_sf$snap)
   output$demo_map_1<-renderLeaflet({
     leaflet_data1<-pburg_merged %>%
       dplyr::select(GEOID, tract_ID, input$demo1)%>%
@@ -50,8 +50,10 @@ server<-function(input, output, session) {
     leaflet(leaflet_data1)%>%
       addTiles()%>%
       addPolygons(fillColor=~pal1(leaflet_data1$variable), fillOpacity = 0.7, weight=0.1)%>%
-      addCircleMarkers(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
-      addCircleMarkers(data=pburg_food_sf, ~X, ~Y, label= ~Name)
+      addCircles(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="grocery"), group="grocery", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="cdb", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addLayersControl(overlayGroups = c("grocery", "cdb"), options = layersControlOptions(collapsed = FALSE))
   })
   
   output$demo_map_2<-renderLeaflet({
@@ -64,7 +66,9 @@ server<-function(input, output, session) {
       addTiles()%>%
       addPolygons(fillColor=~pal2(leaflet_data2$variable), fillOpacity = 0.7, weight=0.1)%>%
       addCircleMarkers(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
-      addCircleMarkers(data=pburg_food_sf, ~X, ~Y, label= ~Name)
+      addCircleMarkers(data=filter(pburg_food_sf, type=="grocery"), group="grocery", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="cdb", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addLayersControl(overlayGroups = c("grocery", "cdb"), options = layersControlOptions(collapsed = FALSE))
   })  
   
   output$scatter<-renderPlot({
