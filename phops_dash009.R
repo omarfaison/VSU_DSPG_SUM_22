@@ -4,6 +4,8 @@ library(tigris)
 library(sf)
 library(shiny)
 library(leaflet)
+library(readxl)
+library(DT)
 
 pop_locations<-read_excel("POP_Market_Locations_04.2022_Lat_Long.xlsx") %>%
   setNames(c("latitude", "longitude", "site", "address", "city", "state", "zip"))
@@ -53,6 +55,8 @@ ui<-fluidPage(
 )
 
 server<-function(input, output, session) {
+  
+  snap_pal<-colorFactor(palette=c("yellow", "green"), domain=pburg_food_sf$snap)
 
   output$demo_map_1<-renderLeaflet({
     leaflet_data1<-pburg_merged %>%
@@ -65,10 +69,8 @@ server<-function(input, output, session) {
       addPolygons(fillColor=~pal1(leaflet_data1$variable), fillOpacity = 0.7, weight=0.1)%>% 
       addMarkers(data=pop_locations_sf, ~X, ~Y, label= ~site, group = "POP Markets") %>%
       addCircleMarkers(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
-      addCircleMarkers(data=snap_grocery_sf, ~X, ~Y, label= ~Name, color = "green", group = "Grocery Stores") %>%
-      addCircleMarkers(data=no_snap_grocery_sf, ~X, ~Y, label= ~Name, color = "orange", group = "Grocery Stores") %>%
-      addCircleMarkers(data=snap_cdb_sf, ~X, ~Y, label= ~Name, color = "green", group = "Covenience, Deli, or Bodega") %>%
-      addCircleMarkers(data=no_snap_cdb_sf, ~X, ~Y, label= ~Name, color = "orange", group = "Covenience, Deli, or Bodega") %>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="grocery"), group="Grocery Stores", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="Covenience, Deli, or Bodega", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
     addLayersControl(
       baseGroups = "POP Markets",
       overlayGroups = c("Grocery Stores", "Covenience, Deli, or Bodega"),
@@ -87,10 +89,8 @@ server<-function(input, output, session) {
       addPolygons(fillColor=~pal2(leaflet_data2$variable), fillOpacity = 0.7, weight=0.1)%>% 
       addMarkers(data=pop_locations_sf, ~X, ~Y, label= ~site, group = "POP Markets") %>%
       addCircleMarkers(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
-      addCircleMarkers(data=snap_grocery_sf, ~X, ~Y, label= ~Name, color = "green", group = "Grocery Stores") %>%
-      addCircleMarkers(data=no_snap_grocery_sf, ~X, ~Y, label= ~Name, color = "orange", group = "Grocery Stores") %>%
-      addCircleMarkers(data=snap_cdb_sf, ~X, ~Y, label= ~Name, color = "green", group = "Covenience, Deli, or Bodega") %>%
-      addCircleMarkers(data=no_snap_cdb_sf, ~X, ~Y, label= ~Name, color = "orange", group = "Covenience, Deli, or Bodega") %>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="grocery"), group="Grocery Stores", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="Covenience, Deli, or Bodega", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
       addLayersControl(
         baseGroups = "POP Markets",
         overlayGroups = c("Grocery Stores", "Covenience, Deli, or Bodega"),
@@ -100,13 +100,16 @@ server<-function(input, output, session) {
   
   output$scatter<-renderPlot({
     ggplot(pburg_merged, aes(.data[[input$demo1]], .data[[input$demo2]]))+
-      geom_text(aes(label=tract_ID))
+      geom_text(aes(label=tract_ID)) +
+      theme_minimal()
   })
   
   output$demo_table<-DT::renderDT({
-    pburg_merged%>%as.data.frame() %>% dplyr::select(tract_ID,input$demo1,input$demo2)
-  })  
-}
+    datatable(pburg_merged %>%as.data.frame() %>% dplyr::select(tract_ID,input$demo1,input$demo2), options = list(
+      pageLength = 11)) %>% formatRound(c(input$demo1, input$demo2), 2)
+})
+  
+}  
 
 
 shinyApp(ui, server)
