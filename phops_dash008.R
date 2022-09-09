@@ -1,4 +1,3 @@
-library(readr)
 library(tidyverse)
 library(tigris)
 library(sf)
