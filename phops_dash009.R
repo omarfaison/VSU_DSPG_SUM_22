@@ -6,18 +6,16 @@ library(shiny)
 library(leaflet)
 library(readxl)
 library(DT)
+library(dplyr)
 
-pop_locations<-read_excel("POP_Market_Locations_04.2022_Lat_Long.xlsx") %>%
-  setNames(c("latitude", "longitude", "site", "address", "city", "state", "zip"))
-pop_locations_sf<-st_as_sf(pop_locations, coords=c("longitude","latitude"), crs="WGS84") %>%
-  cbind(st_coordinates(.))
 
-pburg_merged <- readRDS("C:/users/brian/Documents/R Stuff/VSU_DSPG_SUM_22/pburg_merged_data/pburg_merged.RDS")
+pburg_merged <- readRDS("C:/users/brian/Documents/R Stuff/VSU_DSPG_SUM_22/pburg_merged_data/pburg_merged_named.RDS")
 pburg_merged<-pburg_merged %>% mutate(tract_ID = str_extract(NAME, "[[:digit:]]{4}"))
 pburg_tract_centroids<-st_centroid(pburg_merged) %>%
   cbind(st_coordinates(.))
 
-pburg_food <- read_csv("phops_dashboard/pburg_food.csv")
+pburg_food <- read.csv("phops_dashboard/pburg_food.csv", header=T)
+pburg_food$type<-factor(pburg_food$type, levels=c("cdb", "chain_groc", "local_groc", "pop"))
 pburg_food_sf<-st_as_sf(pburg_food, coords=c("X","Y"), crs="WGS84") %>%
   cbind(st_coordinates(.))
 
@@ -25,16 +23,11 @@ columns<-as.data.frame(names(select_if(pburg_merged,is.numeric))) %>%
   filter(row_number() != n()) 
 columns<-setNames(columns,"var_name")
 
-grocery_sf <- filter(pburg_food_sf, type == "grocery")
-snap_grocery_sf <- filter(grocery_sf, snap == "y")
-no_snap_grocery_sf <- filter(grocery_sf, snap == "n")
 
-cdb_sf <- filter(pburg_food_sf, type == "cdb")
-snap_cdb_sf <- filter(cdb_sf, snap == "y")
-no_snap_cdb_sf <- filter(cdb_sf, snap == "n")
 
 ui<-fluidPage(
   fluidRow(
+    titlePanel("Petersburg Healthy Options Partnerships (PHOPS) Equity Dashboard"),
     column(6,
            selectInput("demo1", "Select a demographic variable", columns$var_name, NULL)),
     column(6,
@@ -67,13 +60,13 @@ server<-function(input, output, session) {
     leaflet(leaflet_data1)%>%
       addTiles()%>%
       addPolygons(fillColor=~pal1(leaflet_data1$variable), fillOpacity = 0.7, weight=0.1)%>% 
-      addMarkers(data=pop_locations_sf, ~X, ~Y, label= ~site, group = "POP Markets") %>%
-      addCircleMarkers(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
-      addCircleMarkers(data=filter(pburg_food_sf, type=="grocery"), group="Grocery Stores", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
-      addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="Covenience, Deli, or Bodega", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircles(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="Covenience, Dollar Store, or Bodega", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="chain_groc"), group="Chain Groceries", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="local_groc"), group="Local Groceries", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="pop"), group="POP Markets", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
     addLayersControl(
-      baseGroups = "POP Markets",
-      overlayGroups = c("Grocery Stores", "Covenience, Deli, or Bodega"),
+      overlayGroups = c("POP Markets", "Chain Groceries", "Local Groceries", "Covenience, Dollar Store, or Bodega"),
       options = layersControlOptions(collapsed = FALSE)
     )
   })
@@ -87,13 +80,14 @@ server<-function(input, output, session) {
     leaflet(leaflet_data2)%>%
       addTiles()%>%
       addPolygons(fillColor=~pal2(leaflet_data2$variable), fillOpacity = 0.7, weight=0.1)%>% 
-      addMarkers(data=pop_locations_sf, ~X, ~Y, label= ~site, group = "POP Markets") %>%
-      addCircleMarkers(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
-      addCircleMarkers(data=filter(pburg_food_sf, type=="grocery"), group="Grocery Stores", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
-      addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="Covenience, Deli, or Bodega", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircles(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="Covenience, Dollar Store, or Bodega", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="chain_groc"), group="Chain Groceries", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="local_groc"), group="Local Groceries", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="pop"), group="POP Markets", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
       addLayersControl(
         baseGroups = "POP Markets",
-        overlayGroups = c("Grocery Stores", "Covenience, Deli, or Bodega"),
+        overlayGroups = c("POP Markets", "Chain Groceries", "Local Groceries", "Covenience, Dollar Store, or Bodega"),
         options = layersControlOptions(collapsed = FALSE)
       )
   })  
