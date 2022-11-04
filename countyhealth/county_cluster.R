@@ -49,3 +49,5 @@ twentytwo_k6_complete %>%
   group_by(cluster) %>% 
   summarise_all(list(mean))
 
+#kmeans, not working
+model_km <- kmeans(twentytwo, centers = 2)
