@@ -7,6 +7,7 @@ library(janitor)
 library(cluster)
 library(factoextra)
 library(dendextend)
+library(purrr)
 
 #importing data
 twentytwomeasures <- read_excel("C:/Users/brian/Documents/R Stuff/countyhealth/2022 County Health Rankings Virginia Data - v1.xlsx", sheet = "Ranked Measure Data")
@@ -20,13 +21,44 @@ nineteen <- nineteenmeasures[,c(1,2,3,11,15,19,24,31,35,39,41,45,47,53,58,68,74,
 twentytwo <- janitor::row_to_names(twentytwo, 1, remove_rows_above = FALSE)
 nineteen <- janitor::row_to_names(nineteen, 1, remove_rows_above = FALSE)
 
+#make numeric, drop water violation column, drop provider and mental health ratio, county, state, and fips
+twentytwo_numeric <- twentytwo[c(-1,-2,-3, -17, -18, -29)]
+#twentytwo_numeric <- na.omit(twentytwo_numeric)
+#twentytwo_numeric<- as.numeric(unlist(twentytwo_numeric))
+#twentytwo_numeric <- scale(twentytwo_numeric)
+#str(twentytwo_numeric)
 
-dist_twentytwo <- dist(twentytwo, method = 'euclidean')
+# Use map_dbl to run many models with varying value of k (centers)
+tot_withinss <- map_dbl(1:10,  function(k){
+  model <- kmeans(x = twentytwo_numeric, centers = k)
+  model$tot.withinss
+})
+
+# Generate a data frame containing both k and tot_withinss
+elbow_df <- data.frame(
+  k = 1:10,
+  tot_withinss = tot_withinss
+)
+
+# Plot the elbow plot
+ggplot(elbow_df, aes(x = k, y = tot_withinss)) +
+  geom_line() +
+  scale_x_continuous(breaks = 1:10)
+
 #hierarchical clustering
+dist_twentytwo <- dist(twentytwo_numeric, method = 'euclidean')
 hc_twentytwo <- hclust(dist_twentytwo)
 clusters_k6 <- cutree(hc_twentytwo, k = 6)
-twentytwo_k6_complete <- mutate(twentytwo, cluster = clusters_k6)
+twentytwo_k6_complete <- mutate(twentytwo_numeric, cluster = clusters_k6)
 count(twentytwo_k6_complete, cluster)
+
+#make twentytwo_k6_complete numeric
+#twentytwo_k6_complete <- na.omit(twentytwo_k6_complete)
+twentytwo_k6_complete<- as.data.frame(apply(twentytwo_k6_complete, 2, as.numeric))
+sapply(twentytwo_k6_complete, class) 
+#twentytwo_k6_complete <- as.numeric(unlist(twentytwo_k6_complete))
+#twentytwo_k6_complete<- scale(twentytwo_k6_complete)
+str(twentytwo_k6_complete)
 
 #more hierarchical
 hc_twentytwo_complete <- hclust(dist_twentytwo, method = 'complete')
@@ -44,10 +76,11 @@ plot(dend_twentytwo)
 dend_3000 <- color_branches(dend_twentytwo, h = 3000)
 plot(dend_3000)
 
-#mean for each category, currently not working
+#mean for each category/cluster
 twentytwo_k6_complete %>% 
   group_by(cluster) %>% 
-  summarise_all(list(mean))
+  summarize_all(list(mean))
+                           
 
-#kmeans, not working
-model_km <- kmeans(twentytwo, centers = 2)
+#kmeans, not working, NAs in data
+model_km <- kmeans(twentytwo_numeric, centers = 2)
