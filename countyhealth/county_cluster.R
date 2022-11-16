@@ -28,34 +28,18 @@ twentytwo_numeric <- twentytwo[c(-1,-2,-3, -17, -18, -29)]
 #twentytwo_numeric <- scale(twentytwo_numeric)
 #str(twentytwo_numeric)
 
-# Use map_dbl to run many models with varying value of k (centers)
-tot_withinss <- map_dbl(1:10,  function(k){
-  model <- kmeans(x = twentytwo_numeric, centers = k)
-  model$tot.withinss
-})
-
-# Generate a data frame containing both k and tot_withinss
-elbow_df <- data.frame(
-  k = 1:10,
-  tot_withinss = tot_withinss
-)
-
-# Plot the elbow plot
-ggplot(elbow_df, aes(x = k, y = tot_withinss)) +
-  geom_line() +
-  scale_x_continuous(breaks = 1:10)
 
 #hierarchical clustering
 dist_twentytwo <- dist(twentytwo_numeric, method = 'euclidean')
 hc_twentytwo <- hclust(dist_twentytwo)
-clusters_k6 <- cutree(hc_twentytwo, k = 6)
-twentytwo_k6_complete <- mutate(twentytwo_numeric, cluster = clusters_k6)
-count(twentytwo_k6_complete, cluster)
+clusters_k4 <- cutree(hc_twentytwo, k = 4)
+twentytwo_k4_complete <- mutate(twentytwo_numeric, cluster = clusters_k4)
+count(twentytwo_k4_complete, cluster)
 
-#make twentytwo_k6_complete numeric
-#twentytwo_k6_complete <- na.omit(twentytwo_k6_complete)
-twentytwo_k6_complete<- as.data.frame(apply(twentytwo_k6_complete, 2, as.numeric))
-sapply(twentytwo_k6_complete, class) 
+#make twentytwo_k4_complete numeric
+#twentytwo_k4_complete <- na.omit(twentytwo_k6_complete)
+twentytwo_k4_complete<- as.data.frame(apply(twentytwo_k4_complete, 2, as.numeric))
+sapply(twentytwo_k4_complete, class) 
 #twentytwo_k6_complete <- as.numeric(unlist(twentytwo_k6_complete))
 #twentytwo_k6_complete<- scale(twentytwo_k6_complete)
 str(twentytwo_k6_complete)
@@ -73,11 +57,11 @@ plot(hc_twentytwo_average, main = 'Average Linkage')
 #dendrogram object and colored dendrogram at height 3000
 dend_twentytwo <- as.dendrogram(hc_twentytwo)
 plot(dend_twentytwo)
-dend_3000 <- color_branches(dend_twentytwo, h = 3000)
-plot(dend_3000)
+dend_1500 <- color_branches(dend_twentytwo, h = 1500)
+plot(dend_1500)
 
 #mean for each category/cluster
-twentytwo_k6_complete %>% 
+mean <- twentytwo_k4_complete %>% 
   group_by(cluster) %>% 
   summarize_all(list(mean))
                            
