@@ -20,6 +20,11 @@ columns<-as.data.frame(names(select(pburg_merged,pop_density:med_income, ACCESS2
 columns<-setNames(columns,"var_name")
 
 ui<-fluidPage(
+  
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/cess", href = "css/pburgdash.css")
+  ),
+  
   fluidRow(
     column(6,
            selectInput("demo1", "Select a demographic variable", columns$var_name, NULL)),
@@ -49,7 +54,12 @@ snap_pal<-colorFactor(palette=c("yellow", "green"), domain=pburg_food_sf$snap)
     
     pal1<-colorNumeric(palette=c("grey","red"), domain=leaflet_data1$variable)
     leaflet(leaflet_data1)%>%
-      addTiles()%>%
+      setView(lng = -77.401924, lat = 37.227928, zoom=12)%>%
+      setMaxBounds( lng1 = -77.466595
+                    , lat1 = 37.258476
+                    , lng2 = -77.319825
+                    , lat2 = 37.159903 ) %>%
+      addTiles(options = providerTileOptions(minZoom = 12))%>%
       addPolygons(fillColor=~pal1(leaflet_data1$variable), fillOpacity = 0.7, weight=0.1)%>%
       addCircles(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
       addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="cdb", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
