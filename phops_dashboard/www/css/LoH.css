@@ -1,0 +1,50 @@
+header
+{
+	background-color:#CC0000;
+}
+
+footer
+{
+	background-color:#2fd445
+}
+
+body
+{
+   color: 0e0e5c; 
+   background-color: #00c5ff;
+}
+
+
+main
+{
+	
+}
+
+nav
+{
+	height: 100%;
+
+
+}
+  table 
+ {
+	 background-color:gold;
+		width:80%
+  }
+.column1, .column2, .column3
+{
+	width:20%
+}
+
+
+.comic
+{    display: block;
+    margin: auto;
+    width: 40%;
+}
+
+h1, h2, h3, h4
+{
+text-align:center;
+}
+

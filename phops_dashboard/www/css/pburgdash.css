@@ -1,0 +1,97 @@
+header
+{
+	background-color: #6a7cde;
+
+}
+
+header
+{
+	border-style: solid;
+	border-color: orange;
+	background-color: #0047bb
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+
+header h1
+{
+	color: gold;
+	text-align: center;
+}
+
+main
+{
+	background-color: white;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 5%;
+	padding-right: 5%;
+	overflow: auto;
+	text-align: justify;
+}
+	
+
+
+body
+{
+   font-family: sans-serif;
+   background-color: white;
+
+}
+
+address
+{
+	text-align: center;
+}
+
+
+
+
+
+nav
+{
+	background-color: #78a0eb;
+		display: block;
+	float: center;
+
+	
+}
+
+
+{
+
+	padding: 2%;
+
+	margin-left: 20%;
+}
+
+.vsulogo
+{
+	
+	float: left;
+	
+}
+
+.hbculogo
+{
+	float: right;
+}
+
+
+
+footer
+{
+  color: white;
+	padding: 5px;
+	border-style: solid;
+	border-color: orange;
+	background-color: #0047bb
+}
+
+footer div
+{
+		background-color: #6a7cde;
+
+	
+}

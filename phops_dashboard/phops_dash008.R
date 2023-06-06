@@ -22,8 +22,22 @@ columns<-setNames(columns,"var_name")
 ui<-fluidPage(
   
   tags$head(
-    tags$link(rel = "stylesheet", type = "text/cess", href = "css/pburgdash.css")
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/pburgdash.css")
   ),
+  #These tags will allow us to use CSS to alter the visuals of the dashboard for aesthetic purposes after implementing HTML
+  #The stylesheet will be in the "www" folder and called pburgdash.css
+  
+  titlePanel(tags$header(tags$h1("Petersburg Health and Demographic Data Dashboard"))),
+  
+  withTags({
+    div(checked=NA,
+        p("This dashbaord is designed to help visualize data regarding the population of Petersburg on a census tract level. This allows you to select 2 different traits and compare them for your own edification."),
+        br(),
+        p("In order to use this dashboard, you can select a trait from the drop-down menu above both maps which will display those traits in various ways. The graphs below will change based on the traits you are comparing."),
+        br(),
+        )
+    }),
+  
   
   fluidRow(
     column(6,
@@ -42,7 +56,10 @@ ui<-fluidPage(
            plotOutput('scatter')),
     column(6,
            DT::DTOutput('demo_table'))
-  )
+  ),
+  
+  tags$footer(tags$p("This dashboard was created with the collaboration of Petersbirg Healthy Options Partnerships(PHOPs), Virginia State University(VSU), and the University of Virginia Biocomplexity Institute's Data Science for The Public Good Young Scholars Program."))
+  
 )
 
 server<-function(input, output, session) {
@@ -75,8 +92,12 @@ snap_pal<-colorFactor(palette=c("yellow", "green"), domain=pburg_food_sf$snap)
       rename(variable=input$demo2)
     
     pal2<-colorNumeric(palette=c("grey","red"), domain=leaflet_data2$variable)
-    leaflet(leaflet_data2)%>%
-      addTiles()%>%
+    leaflet(leaflet_data2)%>%setView(lng = -77.401924, lat = 37.227928, zoom=12)%>%
+      setMaxBounds( lng1 = -77.466595
+                    , lat1 = 37.258476
+                    , lng2 = -77.319825
+                    , lat2 = 37.159903 ) %>%
+      addTiles(options = providerTileOptions(minZoom = 12))%>%
       addPolygons(fillColor=~pal2(leaflet_data2$variable), fillOpacity = 0.7, weight=0.1)%>%
       addCircleMarkers(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
       addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="cdb", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
