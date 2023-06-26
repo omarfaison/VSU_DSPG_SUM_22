@@ -41,7 +41,8 @@ ui<-fluidPage(
         p("The checkboxes on the map allow you to toggle the location of non-restaurant food sources across Petersburg."),
         br(),
         p("POP! Market(Petersburg Offers Produce) is a mobile market offering fresh, local food that presents Petersburg residents in low healthy food access areas with the opportunity to purchase healthy produce and maximize their SNAP benefits through the Virginia Fresh Match program"),
-        br(" \"cbd\" stands for Corner Stores, Dollar Stores, and Bodegas"),
+        p(" \"cbd\" stands for Corner Stores, Dollar Stores, and Bodegas"),
+        br()
         )
     }),
   
@@ -64,7 +65,7 @@ ui<-fluidPage(
     column(6,
            DT::DTOutput('demo_table'))
   ),
-  
+  tags$br(),
   tags$footer(tags$p("This dashboard was created with the collaboration of Petersbirg Healthy Options Partnerships(PHOPs), Virginia State University(VSU), and the University of Virginia Biocomplexity Institute's Data Science for The Public Good Young Scholars Program."))
   
 )

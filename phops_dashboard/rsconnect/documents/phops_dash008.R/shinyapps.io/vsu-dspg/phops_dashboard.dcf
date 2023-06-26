@@ -1,0 +1,13 @@
+name: phops_dashboard
+title: phops_dashboard
+username:
+account: vsu-dspg
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9366294
+bundleId: 7389071
+url: https://vsu-dspg.shinyapps.io/phops_dashboard/
+when: 1687788141.3881
+lastSyncTime: 1687788141.38811
+asMultiple: FALSE
+asStatic: FALSE
