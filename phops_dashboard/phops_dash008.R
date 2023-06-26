@@ -4,6 +4,9 @@ library(sf)
 library(shiny)
 library(leaflet)
 library(DT)
+library(rgeos)
+library(rnaturalearth)
+library(rnaturalearthdata)
 
 pburg_merged <- readRDS("pburg_merged.RDS")
 pburg_merged<-pburg_merged %>% mutate(tract_ID = str_extract(NAME, "[[:digit:]]{4}"))
@@ -35,6 +38,10 @@ ui<-fluidPage(
         br(),
         p("In order to use this dashboard, you can select a trait from the drop-down menu above both maps which will display those traits in various ways. The graphs below will change based on the traits you are comparing."),
         br(),
+        p("The checkboxes on the map allow you to toggle the location of non-restaurant food sources across Petersburg."),
+        br(),
+        p("POP! Market(Petersburg Offers Produce) is a mobile market offering fresh, local food that presents Petersburg residents in low healthy food access areas with the opportunity to purchase healthy produce and maximize their SNAP benefits through the Virginia Fresh Match program"),
+        br(" \"cbd\" stands for Corner Stores, Dollar Stores, and Bodegas"),
         )
     }),
   
@@ -80,10 +87,10 @@ snap_pal<-colorFactor(palette=c("yellow", "green"), domain=pburg_food_sf$snap)
       addPolygons(fillColor=~pal1(leaflet_data1$variable), fillOpacity = 0.7, weight=0.1)%>%
       addCircles(data=pburg_tract_centroids, ~X, ~Y, fillOpacity=0, weight=0, label = ~tract_ID, labelOptions = labelOptions(noHide=T, textOnly = T)) %>%
       addCircleMarkers(data=filter(pburg_food_sf, type=="cdb"), group="cdb", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
-      addCircleMarkers(data=filter(pburg_food_sf, type=="chain_groc"), group="chain_groc", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
-      addCircleMarkers(data=filter(pburg_food_sf, type=="local_groc"), group="local_groc", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
-      addCircleMarkers(data=filter(pburg_food_sf, type=="pop"), group="pop", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
-      addLayersControl(overlayGroups = c("cdb", "chain_groc", "local_groc", "pop"), options = layersControlOptions(collapsed = FALSE))
+      addCircleMarkers(data=filter(pburg_food_sf, type=="chain_groc"), group="Grocery-Chain", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="local_groc"), group="Grocery-Local", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addCircleMarkers(data=filter(pburg_food_sf, type=="pop"), group="POP Market", ~X, ~Y, color= ~snap_pal(snap), label= ~Name, radius = 3)%>%
+      addLayersControl(overlayGroups = c("cdb", "Grocery-Chain", "Grocery-Local", "POP Market"), options = layersControlOptions(collapsed = FALSE))
   })
   
   output$demo_map_2<-renderLeaflet({
