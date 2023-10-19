@@ -16,7 +16,7 @@ library(RColorBrewer)
 library(stringr)
 library(rgdal)
 library(raster)
-library(rasterVis)
+library(rasterVis) 
 
 heat_data<-raster("pm_hi_f.tif")
 pburg_data<-get_acs(geography="tract", state="51", county="730",
