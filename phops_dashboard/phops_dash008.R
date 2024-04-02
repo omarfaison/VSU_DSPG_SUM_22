@@ -2,6 +2,7 @@ library(tidyverse)
 library(tigris)
 library(sf)
 library(shiny)
+library(shinydashboard)
 library(leaflet)
 library(DT)
 
@@ -233,7 +234,7 @@ server<-function(input, output, session) {
   })  
   
   output$scatter <- renderPlot({
-    ggplot(pburg_merged, aes_string(x = input$demo1, y = input$demo2)) +
+    ggplot(pburg_merged, aes(.data[[input$demo1]], .data[[input$demo2]])) +
       geom_text(aes(label = tract_ID)) +
       geom_smooth(method = "lm", se = FALSE, color = "blue", na.rm= T) +
       theme_minimal()
