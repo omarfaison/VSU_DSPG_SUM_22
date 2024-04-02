@@ -1,11 +1,6 @@
 library(tidyverse)
 library(tigris)
 library(sf)
-library(rgeos)
-library(rnaturalearth)
-library(rnaturalearthdata)
-library(raster)
-library(rasterVis)
 library(shiny)
 library(leaflet)
 library(DT)
@@ -238,19 +233,19 @@ server<-function(input, output, session) {
   })  
   
   output$scatter <- renderPlot({
-    gg <- ggplot(pburg_merged, aes_string(x = input$demo1, y = input$demo2)) +
+    ggplot(pburg_merged, aes_string(x = input$demo1, y = input$demo2)) +
       geom_text(aes(label = tract_ID)) +
-      geom_smooth(method = "lm", se = FALSE, color = "blue") +
+      geom_smooth(method = "lm", se = FALSE, color = "blue", na.rm= T) +
       theme_minimal()
     
-    model <- lm(as.formula(paste(input$demo2, input$demo1, sep = "~")), data = pburg_merged)
-    r_squared <- summary(model)$r.squared
-    r_squared_label <- paste("R-squared: ", round(r_squared, 3))
+    #model <- lm(as.formula(paste(input$demo2, input$demo1, sep = "~")), data = pburg_merged)
+    #r_squared <- summary(model)$r.squared
+    #r_squared_label <- paste("R-squared: ", round(r_squared, 3))
     
-    gg <- gg + annotate("text", x = max(pburg_merged[[input$demo1]]),
-                        y = min(pburg_merged[[input$demo2]]), label = r_squared_label, hjust = 1, vjust = -5, color = "red")
+    #gg <- gg + annotate("text", x = max(pburg_merged[[input$demo1]]),
+    #                    y = min(pburg_merged[[input$demo2]]), label = r_squared_label, hjust = 1, vjust = -5, color = "red")
     
-    print(gg)
+   
   })
   
   output$demo_table<-DT::renderDT({
